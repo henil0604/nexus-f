@@ -1,7 +1,15 @@
 import { Elysia } from "elysia";
+import { logger } from "./utils/logger";
 
-const app = new Elysia().get("/", () => "Hello Elysia").listen(3000);
+const app = new Elysia().get("/", () => "Hello Elysia");
 
-console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
-);
+const PORT = Bun.env.PORT;
+
+if (!PORT) {
+  logger.fatal("PORT is not defined, throwing error");
+  throw new Error("PORT is not defined");
+}
+
+app.listen(PORT, () => {
+  logger.success("Server started on port", PORT);
+});
