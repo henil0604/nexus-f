@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id String @id
+
+    username       String @unique
+    passwordDigest String
+    salt           String
+
+    publicKey           String @unique
+    encryptedPrivateKey String @unique
+
+    ownedFiles  File[]      @relation(name: "ownedFiles")
+    sharedFiles FileShare[] @relation(name: "sharedFiles")
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([username, publicKey])
+}
+
+model File {
+    id String @id
+
+    name     String
+    size     BigInt
+    mimeType String
+
+    // encryption key encrypted with sender's public key
+    encryptedEncryptionKey String
+
+    owner   User   @relation(name: "ownedFiles", fields: [ownerId], references: [id])
+    ownerId String
+
+    sharedTo FileShare[]
+
+    pushed Boolean @default(false)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    expiresAt DateTime
+}
+
+model FileShare {
+    id String @id @default(uuid())
+
+    file   File   @relation(fields: [fileId], references: [id])
+    fileId String
+
+    // encryption key encrypted with reciever's public key
+    encryptedEncryptionKey String
+
+    sharedTo   User   @relation(name: "sharedFiles", fields: [sharedToId], references: [id])
+    sharedToId String
+
+    createdAt DateTime @default(now())
+}

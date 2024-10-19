@@ -1,8 +1,29 @@
-import { Elysia } from "elysia";
-import { logger } from "./utils/logger";
+import { swagger } from "@elysiajs/swagger";
+import { baseElysia } from "@/base";
+import { V1Routes } from "@/routes/v1";
+import { logger as NiceLogger } from "@tqman/nice-logger";
+import { logger } from "@/utils/logger";
 
-const app = new Elysia().get("/", () => "Hello Elysia");
+const app = baseElysia({
+  precompile: true,
+  name: "root",
+})
+  .use(
+    NiceLogger({
+      mode: "live",
+      withTimestamp: true,
+    })
+  )
+  .use(
+    swagger({
+      path: "/swagger",
+    })
+  )
+  .group("/v1", (app) => {
+    return app.use(V1Routes);
+  });
 
+// Start the server
 const PORT = Bun.env.PORT;
 
 if (!PORT) {

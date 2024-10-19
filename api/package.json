@@ -5,11 +5,14 @@
     "dev": "bun run --watch src/index.ts"
   },
   "dependencies": {
+    "@elysiajs/swagger": "^1.1.5",
+    "@tqman/nice-logger": "^1.0.5",
     "consola": "^3.2.3",
     "elysia": "latest"
   },
   "devDependencies": {
-    "bun-types": "latest"
+    "bun-types": "latest",
+    "prisma": "^5.21.1"
   },
   "module": "src/index.js"
 }
