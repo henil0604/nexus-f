@@ -1,5 +1,9 @@
 import { baseElysia } from "@/base";
 import db from "@/lib/db";
+import {
+  GeneralErrorResponseSchema,
+  GeneralSuccessResponseSchema,
+} from "@/types/response";
 import { CryptoUtils } from "@/utils/crypto";
 import { logger } from "@/utils/logger";
 import { until } from "@open-draft/until";
@@ -28,22 +32,14 @@ export const RegisterBodySchema = t.Object({
   // base64
   passwordDigest: t.String({
     minLength: 1,
-    description: "Password digest in base64 format",
+    description:
+      "Password digest of Encryption Key derived from PBKDF2 Hashing in base64 format",
   }),
   // base64
   signature: t.String({
     minLength: 1,
     description: "Signature in base64 format",
   }),
-});
-
-export const RegisterSuccessResponseSchema = t.Object({
-  error: t.Literal(false),
-  message: t.String(),
-});
-export const RegisterErrorResponseSchema = t.Object({
-  error: t.Literal(true),
-  message: t.String(),
 });
 
 export const RegisterRoute = baseElysia({
@@ -91,7 +87,7 @@ export const RegisterRoute = baseElysia({
       );
 
     if (DatabaseExistingUserFetchError) {
-      logger.error(DatabaseExistingUserFetchError);
+      logger.fatal(DatabaseExistingUserFetchError);
       return sendError(500, {
         error: true,
         message: "Database error",
@@ -121,7 +117,7 @@ export const RegisterRoute = baseElysia({
     );
 
     if (DatabaseCreateUserError) {
-      logger.error(DatabaseCreateUserError);
+      logger.fatal(DatabaseCreateUserError);
       return sendError(500, {
         error: true,
         message: "Database error",
@@ -138,10 +134,10 @@ export const RegisterRoute = baseElysia({
   {
     body: RegisterBodySchema,
     response: {
-      200: RegisterSuccessResponseSchema,
-      500: RegisterErrorResponseSchema,
-      409: RegisterErrorResponseSchema,
-      403: RegisterErrorResponseSchema,
+      200: GeneralSuccessResponseSchema,
+      500: GeneralErrorResponseSchema,
+      409: GeneralErrorResponseSchema,
+      403: GeneralErrorResponseSchema,
     },
     detail: {
       description: "Register a new user",
