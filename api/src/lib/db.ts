@@ -1,9 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 
-const globalForPrisma = globalThis as unknown as { db: PrismaClient };
+const globalForDb = globalThis as unknown as { db: PrismaClient };
 
-const prisma =
-  globalForPrisma.db ||
+const db =
+  globalForDb.db ||
   new PrismaClient({
     log:
       Bun.env.NODE_ENV == "development"
@@ -11,6 +11,6 @@ const prisma =
         : ["warn", "error"],
   });
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.db = prisma;
+if (process.env.NODE_ENV !== "production") globalForDb.db = db;
 
-export default prisma;
+export default db;

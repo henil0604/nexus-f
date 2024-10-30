@@ -11,7 +11,9 @@ const app = baseElysia({
   .use(
     NiceLogger({
       mode: "live",
-      withTimestamp: true,
+      withTimestamp: () => {
+        return new Date().toISOString();
+      },
     })
   )
   .use(
@@ -19,9 +21,7 @@ const app = baseElysia({
       path: "/swagger",
     })
   )
-  .group("/v1", (app) => {
-    return app.use(V1Routes);
-  });
+  .use(V1Routes);
 
 // Start the server
 const PORT = Bun.env.PORT;

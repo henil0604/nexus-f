@@ -6,11 +6,16 @@
   },
   "dependencies": {
     "@elysiajs/swagger": "^1.1.5",
-    "@tqman/nice-logger": "^1.0.5",
+    "@open-draft/until": "^2.1.0",
+    "@tqman/nice-logger": "^1.0.7",
     "consola": "^3.2.3",
-    "elysia": "latest"
+    "elysia": "latest",
+    "nanoid": "^5.0.8",
+    "node-forge": "^1.3.1"
   },
   "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
+    "@types/node-forge": "^1.3.11",
     "bun-types": "latest",
     "prisma": "^5.21.1"
   },

@@ -26,10 +26,21 @@ model User {
     ownedFiles  File[]      @relation(name: "ownedFiles")
     sharedFiles FileShare[] @relation(name: "sharedFiles")
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    sessions  Session[]
 
     @@index([username, publicKey])
+}
+
+model Session {
+    id String @id @default(cuid())
+
+    user   User   @relation(fields: [userId], references: [id])
+    userId String
+
+    createdAt DateTime  @default(now())
+    expiresAt DateTime?
 }
 
 model File {
@@ -55,7 +66,7 @@ model File {
 }
 
 model FileShare {
-    id String @id @default(uuid())
+    id String @id @default(cuid())
 
     file   File   @relation(fields: [fileId], references: [id])
     fileId String
