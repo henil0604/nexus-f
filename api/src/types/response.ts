@@ -31,16 +31,3 @@ export const ConstructErrorResponseSchemaWithData = <T extends TSchema>(
     }),
   ]);
 };
-
-export const RateLimitErrorResponse = new Response(
-  JSON.stringify({
-    error: true,
-    message: "Too many requests",
-  }),
-  {
-    status: 429,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }
-);
