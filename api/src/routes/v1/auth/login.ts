@@ -79,7 +79,6 @@ export const LoginRoute = baseElysia({
       });
     }
 
-    console.log(cookie.auth_session.value);
     // if user is already logged in
     if (typeof cookie.auth_session.value === "string") {
       // invalidate old session
