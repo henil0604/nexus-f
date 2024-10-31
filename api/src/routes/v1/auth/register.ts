@@ -4,6 +4,13 @@ import {
   GeneralErrorResponseSchema,
   GeneralSuccessResponseSchema,
 } from "@/types/response";
+import {
+  EncryptedPrivateKeySchema,
+  PasswordDigestSchema,
+  PublicKeySchema,
+  SaltSchema,
+  UsernameSchema,
+} from "@/types/schema";
 import { CryptoUtils } from "@/utils/crypto";
 import { logger } from "@/utils/logger";
 import { until } from "@open-draft/until";
@@ -11,30 +18,15 @@ import { t } from "elysia";
 import { nanoid } from "nanoid";
 
 export const RegisterBodySchema = t.Object({
-  username: t.String({
-    minLength: 2,
-  }),
+  username: UsernameSchema,
   // pem
-  publicKey: t.String({
-    minLength: 1,
-    description: "Public Key in PEM format",
-  }),
+  publicKey: PublicKeySchema,
   // base64
-  salt: t.String({
-    minLength: 1,
-    description: "Salt used for PBKDF2 hashing in base64 format",
-  }),
+  salt: SaltSchema,
   // base64
-  encryptedPrivateKey: t.String({
-    minLength: 1,
-    description: "Encrypted Private Key in base64 format",
-  }),
+  encryptedPrivateKey: EncryptedPrivateKeySchema,
   // base64
-  passwordDigest: t.String({
-    minLength: 1,
-    description:
-      "Password digest of Encryption Key derived from PBKDF2 Hashing in base64 format",
-  }),
+  passwordDigest: PasswordDigestSchema,
   // base64
   signature: t.String({
     minLength: 1,

@@ -9,9 +9,13 @@ import {
   ConstructSuccessResponseSchemaWithData,
   GeneralErrorResponseSchema,
 } from "@/types/response";
+import { UsernameSchema } from "@/types/schema";
 
 export const AuthRoutes = baseElysia({
   prefix: "/auth",
+  detail: {
+    tags: ["auth"],
+  },
 })
   .use(RegisterRoute)
   .use(LoginRoute)
@@ -59,7 +63,7 @@ export const AuthRoutes = baseElysia({
     },
     {
       query: t.Object({
-        username: t.String(),
+        username: UsernameSchema,
       }),
       response: {
         200: ConstructSuccessResponseSchemaWithData(
@@ -69,6 +73,9 @@ export const AuthRoutes = baseElysia({
         ),
         404: GeneralErrorResponseSchema,
         500: GeneralErrorResponseSchema,
+      },
+      detail: {
+        description: "Returns the salt for a given username",
       },
     }
   );

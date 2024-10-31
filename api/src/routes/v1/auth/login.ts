@@ -4,18 +4,15 @@ import {
   GeneralErrorResponseSchema,
   GeneralSuccessResponseSchema,
 } from "@/types/response";
+import { PasswordDigestSchema, UsernameSchema } from "@/types/schema";
 import { logger } from "@/utils/logger";
 import { until } from "@open-draft/until";
 import { t } from "elysia";
 import moment from "moment";
 
 export const LoginBodySchema = t.Object({
-  username: t.String({
-    minLength: 2,
-  }),
-  passwordDigest: t.String({
-    minLength: 1,
-  }),
+  username: UsernameSchema,
+  passwordDigest: PasswordDigestSchema,
 });
 
 export const LoginRoute = baseElysia({
