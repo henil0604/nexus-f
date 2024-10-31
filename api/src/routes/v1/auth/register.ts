@@ -153,7 +153,8 @@ export const RegisterRoute = baseElysia({
           t.Object({
             encryptedId: t.String({
               minLength: 1,
-              description: "Encrypted ID in base64 format",
+              description:
+                "Encrypted ID with client's public key in base64 format. This can also be used for verification purposes by client.",
             }),
           })
         ),

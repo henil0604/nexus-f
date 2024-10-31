@@ -1,10 +1,12 @@
 import { baseElysia } from "@/base";
 import db from "@/lib/db";
 import {
+  ConstructSuccessResponseSchemaWithData,
   GeneralErrorResponseSchema,
   GeneralSuccessResponseSchema,
 } from "@/types/response";
 import { PasswordDigestSchema, UsernameSchema } from "@/types/schema";
+import { CryptoUtils } from "@/utils/crypto";
 import { logger } from "@/utils/logger";
 import { until } from "@open-draft/until";
 import { t } from "elysia";
@@ -94,15 +96,31 @@ export const LoginRoute = baseElysia({
 
     cookie.auth_session.value = session.id;
 
+    const encryptedSessionId = CryptoUtils.encryptUsingPublicKey(
+      user.publicKey,
+      CryptoUtils.stringToUint8Array(session.id)
+    );
+
     return {
       error: false,
       message: "User logged in successfully",
+      data: {
+        encryptedSessionId: CryptoUtils.uint8ArrayToBase64(encryptedSessionId),
+      },
     };
   },
   {
     body: LoginBodySchema,
     response: {
-      200: GeneralSuccessResponseSchema,
+      200: ConstructSuccessResponseSchemaWithData(
+        t.Object({
+          encryptedSessionId: t.String({
+            minLength: 1,
+            description:
+              "Encrypted session ID with user's public key in base64 format",
+          }),
+        })
+      ),
       500: GeneralErrorResponseSchema,
       404: GeneralErrorResponseSchema,
     },
