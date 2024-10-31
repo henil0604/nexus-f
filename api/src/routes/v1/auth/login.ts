@@ -5,7 +5,12 @@ import {
   GeneralErrorResponseSchema,
   GeneralSuccessResponseSchema,
 } from "@/types/response";
-import { PasswordDigestSchema, UsernameSchema } from "@/types/schema";
+import {
+  EncryptedPrivateKeySchema,
+  PasswordDigestSchema,
+  PublicKeySchema,
+  UsernameSchema,
+} from "@/types/schema";
 import { CryptoUtils } from "@/utils/crypto";
 import { logger } from "@/utils/logger";
 import { until } from "@open-draft/until";
@@ -78,24 +83,6 @@ export const LoginRoute = baseElysia({
       });
     }
 
-    // if user is already logged in
-    if (typeof cookie.auth_session.value === "string") {
-      // invalidate old session
-      const { error: DatabaseOldSessionDeleteError } = await until(() =>
-        db.session.delete({
-          where: {
-            id: cookie.auth_session.value,
-          },
-        })
-      );
-
-      if (DatabaseOldSessionDeleteError) {
-        logger.fatal(DatabaseOldSessionDeleteError);
-      }
-    }
-
-    cookie.auth_session.value = session.id;
-
     const encryptedSessionId = CryptoUtils.encryptUsingPublicKey(
       user.publicKey,
       CryptoUtils.stringToUint8Array(session.id)
@@ -106,6 +93,8 @@ export const LoginRoute = baseElysia({
       message: "User logged in successfully",
       data: {
         encryptedSessionId: CryptoUtils.uint8ArrayToBase64(encryptedSessionId),
+        publicKey: user.publicKey,
+        encryptedPrivateKey: user.encryptedPrivateKey,
       },
     };
   },
@@ -119,6 +108,8 @@ export const LoginRoute = baseElysia({
             description:
               "Encrypted session ID with user's public key in base64 format",
           }),
+          publicKey: PublicKeySchema,
+          encryptedPrivateKey: EncryptedPrivateKeySchema,
         })
       ),
       500: GeneralErrorResponseSchema,
